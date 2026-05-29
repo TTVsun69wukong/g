@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Про мене — sun69wukong</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/djesld12q-stack/sunwukong/main/favicon.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/djesld12q-stack/sunwukong/main/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #9146FF; --accent2: #9146FF; --bg: #07070f; --bg3: #121220; --bg4: #181830;
+      --text: #eeeef8; --muted: #6e6e90; --border: rgba(145,70,255,.18);
+    }
+    body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
+      background-size: 44px 44px; pointer-events: none; z-index: 0;
+    }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 56px;
+      background: rgba(7,7,15,.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px);
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--accent); text-decoration: none; }
+    .nav-logo span { color: var(--accent2); }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .page { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 100px 24px 60px; }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin-bottom: 4px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; margin-bottom: 28px; }
+
+    .about-card {
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 12px; padding: 32px 36px;
+      display: flex; gap: 32px; align-items: flex-start; margin-bottom: 24px;
+    }
+    @media(max-width:600px){ .about-card{ flex-direction:column; padding:24px; } }
+
+    /* Аватар — підтримує і img і fallback */
+    .about-avatar {
+      width: 90px; height: 90px; flex-shrink: 0; border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--accent); box-shadow: 0 0 24px rgba(145,70,255,.5);
+      background: linear-gradient(135deg, var(--accent) 0%, #00bfff 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #fff;
+    }
+    .about-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+    .about-text { flex: 1; }
+    .about-name { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--accent); margin-bottom: 10px; }
+    .about-bio { font-size: 15px; font-weight: 600; line-height: 1.7; color: #b0b0cc; }
+    .about-bio strong { color: var(--accent); }
+
+    /* Картки контенту */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 24px; }
+    .stat-card {
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; text-align: center;
+      transition: border-color .2s, transform .2s;
+    }
+    .stat-card:hover { border-color: rgba(145,70,255,.45); transform: translateY(-3px); }
+
+    /* Картинка в картці */
+    .stat-img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
+      background: var(--bg3);
+    }
+    /* Якщо картинки нема — показуємо емодзі-заглушку */
+    .stat-ico {
+      width: 100%; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px; background: var(--bg3);
+    }
+
+    .stat-body { padding: 14px; }
+    .stat-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); }
+
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
+    footer strong { color: var(--accent); }
+
+    /* ── BURGER MOBILE MENU ── */
+    .burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; z-index: 300; }
+    .burger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 150;
+      background: rgba(7,7,15,.98); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 4px; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .mobile-menu a:hover, .mobile-menu a.active { color: var(--accent); }
+    @media(max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .burger { display: flex; }
+    }
+
+    /* ── DROPDOWN ── */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown > a { cursor: pointer; }
+    .dropdown-menu {
+      position: absolute; top: 100%; left: 50%;
+      padding-top: 14px; /* невидимий міст між кнопкою і меню */
+      transform: translateX(-50%);
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s, transform .2s;
+      z-index: 500;
+    }
+    .dropdown-menu-inner {
+      background: rgba(7,7,15,.98); border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 0; min-width: 170px;
+      backdrop-filter: blur(14px);
+      transform: translateY(-6px); transition: transform .2s;
+    }
+    .nav-dropdown:hover .dropdown-menu {
+      opacity: 1; pointer-events: all;
+    }
+    .nav-dropdown:hover .dropdown-menu-inner {
+      transform: translateY(0);
+    }
+    .dropdown-menu a {
+      display: block; padding: 10px 18px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; border-bottom: none !important;
+      transition: color .15s, background .15s; white-space: nowrap;
+    }
+    .dropdown-menu a:hover { color: var(--text); background: rgba(145,70,255,.08); }
+    .dropdown-menu a.active { color: var(--accent); }
+    .nav-dropdown > a.dropdown-active { color: var(--accent); border-bottom-color: var(--accent) !important; }
+
+    /* ══════════ MOBILE ABOUT ══════════ */
+    @media(max-width:600px){
+      .about-card { padding:20px 18px; }
+      .about-avatar { width:68px; height:68px; font-size:28px; }
+      .stats-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media(max-width:380px){
+      .stats-grid { grid-template-columns:1fr; }
+      .page { padding: 76px 12px 36px; }
+    }
+
+
+    @media(max-width:380px){
+      .mobile-menu a { font-size:26px; letter-spacing:2px; }
+      .mobile-menu { gap:20px; }
+    }
+
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">sun<span>69</span>wukong</a>
+  <div class="nav-links">
+    <a href="index.html">Головна</a>
+    <a href="about.html" class="active">Про мене</a>
+    <a href="stream.html">Стрім</a>
+    <a href="games.html">Ігри</a>
+    <div class="nav-dropdown">
+      <a class="">Інше ▾</a>
+      <div class="dropdown-menu">
+        <div class="dropdown-menu-inner">
+          <a href="scripts.html">Мої скрипти</a>
+          <a href="links.html">Посилання</a>
+          <a href="schedule.html">Розклад</a>
+          <a href="donators.html">Топ донатери</a>
+          <a href="clips.html">Кліпи</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="burger" id="burger" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Головна</a>
+  <a href="about.html" class="active">Про мене</a>
+  <a href="stream.html">Стрім</a>
+  <a href="games.html">Ігри</a>
+  <a href="scripts.html">Мої скрипти</a>
+  <a href="links.html">Посилання</a>
+  <a href="schedule.html">Розклад</a>
+  <a href="donators.html">Топ донатери</a>
+  <a href="clips.html">Кліпи</a>
+</div>
+
+<div class="page">
+  <p class="section-label">// про мене</p>
+  <h1 class="section-title">ХТО Я?</h1>
+
+  <div class="about-card">
+
+    <div class="about-avatar">
+      <!-- АВАТАР: вставте посилання на фото нижче -->
+      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/1061c666-078b-4160-861f-a3c919383f2e-profile_image-70x70.png" alt="sun69wukong">
+      <!-- Якщо прибрати img — покаже букву S як fallback -->
+    </div>
+
+    <div class="about-text">
+      <div class="about-name">sun69wukong</div>
+      <p class="about-bio">
+        Ласкаво просимо на канал <strong>sun69wukong</strong>! Тут ви знайдете все, що пов'язано з іграми, переглядом фільмів, аніме та мультиків. Я обожнюю грати в ігри та часто <strong>"горю"</strong> від них, але це лише додає веселощів! Я завжди радий поспілкуватися з вами на різні теми та поділитися своїми думками.
+      </p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+
+    <!-- КАРТКА 1: ІГРИ -->
+    <div class="stat-card">
+      <!-- Вставте своє фото/картинку замість емодзі-заглушки -->
+      <img src="https://kultur.jp/wp-content/uploads/2024/01/goty2023_top10-1536x898.jpg" alt="Ігри" class="stat-img">
+      <div class="stat-body">
+        <div class="stat-label">ІГРИ</div>
+      </div>
+    </div>
+
+    <!-- КАРТКА 2: ФІЛЬМИ -->
+    <div class="stat-card">
+      <img src="https://i.work.ua/cdn-cgi/image/f=jpeg/article/2489b.jpg?v=1713862817" alt="Фільми" class="stat-img">
+      <div class="stat-body">
+        <div class="stat-label">ФІЛЬМИ</div>
+      </div>
+    </div>
+
+    <!-- КАРТКА 3: АНІМЕ -->
+    <div class="stat-card">
+      <img src="https://i.pinimg.com/originals/70/3e/70/703e707fec08440ec56a9130984436e9.jpg" alt="Аніме" class="stat-img">
+      <div class="stat-body">
+        <div class="stat-label">АНІМЕ</div>
+      </div>
+    </div>
+
+    <!-- КАРТКА 4: МУЛЬТИКИ -->
+    <div class="stat-card">
+      <img src="https://tse4.mm.bing.net/th/id/OIP.HjZ1LzBmTnQKORjAvBV7egHaE8?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Мультики" class="stat-img">
+      <div class="stat-body">
+        <div class="stat-label">МУЛЬТИКИ</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
+
+<script>
+  const _burger = document.getElementById('burger');
+  const _mobileMenu = document.getElementById('mobileMenu');
+  if (_burger && _mobileMenu) {
+    _burger.addEventListener('click', () => {
+      _burger.classList.toggle('open');
+      _mobileMenu.classList.toggle('open');
+    });
+    _mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        _burger.classList.remove('open');
+        _mobileMenu.classList.remove('open');
+      });
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Стрім — sun69wukong</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/djesld12q-stack/sunwukong/main/favicon.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/djesld12q-stack/sunwukong/main/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #9146FF; --bg: #07070f; --bg3: #121220; --bg4: #181830;
+      --text: #eeeef8; --muted: #6e6e90; --border: rgba(145,70,255,.18);
+    }
+    body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
+      background-size: 44px 44px; pointer-events: none; z-index: 0;
+    }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 56px;
+      background: rgba(7,7,15,.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px);
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--accent); text-decoration: none; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .page { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 100px 24px 60px; }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin-bottom: 4px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; margin-bottom: 28px; }
+    .stream-card { background: var(--bg4); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .stream-hdr { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; background: var(--bg3); border-bottom: 1px solid rgba(145,70,255,.12); }
+    .stream-ch { display: flex; align-items: center; gap: 12px; }
+    .stream-av { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); box-shadow: 0 0 12px rgba(145,70,255,.4); }
+    .stream-info h4 { font-weight: 700; font-size: 15px; }
+    .stream-info span { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); }
+    .stream-live { display: flex; align-items: center; gap: 7px; }
+    .stream-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 7px rgba(145,70,255,.8); animation: blink 1.5s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.1} }
+    .stream-ltxt { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1px; }
+    .stream-player { background: #040408; position: relative; width: 100%; aspect-ratio: 16/9; min-height: 240px; }
+    .stream-ftr { display: flex; align-items: center; justify-content: space-between; padding: 12px 22px; gap: 12px; flex-wrap: wrap; }
+    .tw-link { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-decoration: none; letter-spacing: 1px; transition: opacity .2s; }
+    .tw-link:hover { opacity: .7; }
+
+    /* CAROUSEL */
+    .carousel-section { margin-top: 52px; }
+    .carousel-section .section-title { font-size: 32px; }
+    .carousel-outer { display: flex; align-items: center; margin-top: 20px; }
+    .carousel-btn {
+      flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--accent);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .2s, border-color .2s, transform .15s, box-shadow .2s;
+    }
+    .carousel-btn:hover { background: rgba(145,70,255,.15); border-color: var(--accent); box-shadow: 0 0 16px rgba(145,70,255,.3); transform: scale(1.08); }
+    .carousel-btn:active { transform: scale(.95); }
+    .carousel-viewport { flex: 1; overflow: hidden; margin: 0 14px; }
+    .carousel-track { display: flex; gap: 14px; transition: transform .38s cubic-bezier(.4,0,.2,1); }
+    .sc-card {
+      flex-shrink: 0; background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
+      cursor: pointer; transition: border-color .2s, box-shadow .2s, transform .2s;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sc-card:hover { border-color: rgba(145,70,255,.5); box-shadow: 0 4px 28px rgba(145,70,255,.18); transform: translateY(-3px); }
+    .sc-thumb {
+      position: relative; width: 100%; aspect-ratio: 16/9;
+      background: #040408; overflow: hidden; flex-shrink: 0;
+    }
+    .sc-thumb img.sc-preview {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .3s ease;
+    }
+    .sc-card:hover .sc-thumb img.sc-preview { transform: scale(1.04); }
+    .sc-thumb-offline {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      background: linear-gradient(135deg, #0a0a18, #100e22);
+      z-index: 2;
+    }
+    .sc-thumb-offline svg { opacity: .12; }
+    .sc-thumb-offline span {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      letter-spacing: 2px; color: var(--muted); opacity: .5;
+    }
+    .sc-live-badge {
+      position: absolute; top: 7px; left: 7px;
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 700; letter-spacing: 1px;
+      padding: 3px 7px; border-radius: 4px;
+      background: rgba(7,7,15,.75); backdrop-filter: blur(6px);
+      border: 1px solid rgba(145,70,255,.5); color: var(--accent);
+    }
+    .sc-live-badge::before {
+      content: ''; display: block; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 6px rgba(145,70,255,.9);
+      animation: blink 1.5s step-end infinite;
+    }
+    .sc-live-badge.hidden { display: none; }
+    .sc-body { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+    .sc-av {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      border: 2px solid rgba(145,70,255,.35); overflow: hidden;
+      background: linear-gradient(135deg, var(--accent), #5c2d91);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: #fff;
+      transition: border-color .2s;
+    }
+    .sc-card:hover .sc-av { border-color: var(--accent); }
+    .sc-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .sc-info { min-width: 0; flex: 1; }
+    .sc-name { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sc-url { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sc-arrow { flex-shrink: 0; opacity: .3; transition: opacity .2s; }
+    .sc-card:hover .sc-arrow { opacity: .8; }
+    .carousel-dots { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; }
+    .cdot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); opacity: .4; transition: opacity .2s, background .2s, transform .2s; cursor: pointer; }
+    .cdot.active { background: var(--accent); opacity: 1; transform: scale(1.4); }
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
+    footer strong { color: var(--accent); }
+
+    /* ── BURGER ── */
+    .burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; z-index: 300; }
+    .burger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 150;
+      background: rgba(7,7,15,.98); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 4px; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .mobile-menu a:hover, .mobile-menu a.active { color: var(--accent); }
+    @media(max-width: 768px) { nav { padding: 0 20px; } .nav-links { display: none; } .burger { display: flex; } }
+
+    /* ── DROPDOWN ── */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown > a { cursor: pointer; }
+    .dropdown-menu {
+      position: absolute; top: 100%; left: 50%; padding-top: 14px;
+      transform: translateX(-50%); opacity: 0; pointer-events: none;
+      transition: opacity .2s, transform .2s; z-index: 500;
+    }
+    .dropdown-menu-inner {
+      background: rgba(7,7,15,.98); border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 0; min-width: 170px; backdrop-filter: blur(14px);
+      transform: translateY(-6px); transition: transform .2s;
+    }
+    .nav-dropdown:hover .dropdown-menu { opacity: 1; pointer-events: all; }
+    .nav-dropdown:hover .dropdown-menu-inner { transform: translateY(0); }
+    .dropdown-menu a {
+      display: block; padding: 10px 18px; font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+      text-decoration: none; border-bottom: none !important;
+      transition: color .15s, background .15s; white-space: nowrap;
+    }
+    .dropdown-menu a:hover { color: var(--text); background: rgba(145,70,255,.08); }
+    .dropdown-menu a.active { color: var(--accent); }
+    .nav-dropdown > a.dropdown-active { color: var(--accent); border-bottom-color: var(--accent) !important; }
+
+    @media(max-width:600px){
+      .stream-hdr { flex-direction:column; align-items:flex-start; gap:10px; padding:12px 16px; }
+      .stream-ftr { flex-direction:column; align-items:flex-start; gap:8px; padding:10px 16px; }
+      .carousel-btn { width:36px; height:36px; }
+      .carousel-outer { margin:0 -4px; }
+    }
+    @media(max-width:480px){ .page { padding: 76px 14px 40px; } nav { padding:0 14px; } footer { padding:18px 14px; } }
+    @media(max-width:380px){ .mobile-menu a { font-size:26px; letter-spacing:2px; } .mobile-menu { gap:20px; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">sun<span>69</span>wukong</a>
+  <div class="nav-links">
+    <a href="index.html">Головна</a>
+    <a href="about.html">Про мене</a>
+    <a href="stream.html" class="active">Стрім</a>
+    <a href="games.html">Ігри</a>
+    <div class="nav-dropdown">
+      <a class="">Інше ▾</a>
+      <div class="dropdown-menu">
+        <div class="dropdown-menu-inner">
+          <a href="scripts.html">Мої скрипти</a>
+          <a href="links.html">Посилання</a>
+          <a href="schedule.html">Розклад</a>
+          <a href="donators.html">Топ донатери</a>
+          <a href="clips.html">Кліпи</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="burger" id="burger" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Головна</a>
+  <a href="about.html">Про мене</a>
+  <a href="stream.html" class="active">Стрім</a>
+  <a href="games.html">Ігри</a>
+  <a href="scripts.html">Мої скрипти</a>
+  <a href="links.html">Посилання</a>
+  <a href="schedule.html">Розклад</a>
+  <a href="donators.html">Топ донатери</a>
+  <a href="clips.html">Кліпи</a>
+</div>
+
+<div class="page">
+  <p class="section-label">// трансляція</p>
+  <h1 class="section-title">ПРЯМИЙ ЕФІР</h1>
+  <div class="stream-card">
+    <div class="stream-hdr">
+      <div class="stream-ch">
+        <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/1061c666-078b-4160-861f-a3c919383f2e-profile_image-70x70.png" alt="sun69wukong" class="stream-av">
+        <div class="stream-info">
+          <h4>sun69wukong</h4>
+          <span>twitch.tv/sun69wukong</span>
+        </div>
+      </div>
+      <div class="stream-live">
+        <div class="stream-dot"></div>
+        <span class="stream-ltxt">LIVE</span>
+      </div>
+    </div>
+    <div class="stream-player" id="stream-player-wrap"></div>
+    <script>
+      (function(){
+        var host = window.location.hostname;
+        var parent = (host && host !== 'localhost' && host !== '127.0.0.1')
+          ? host : 'djesld12q-stack.github.io';
+        var wrap = document.getElementById('stream-player-wrap');
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://player.twitch.tv/?channel=sun69wukong&parent=' + parent + '&autoplay=false&muted=false';
+        iframe.allowFullscreen = true;
+        iframe.allow = 'autoplay; fullscreen';
+        iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
+        wrap.style.position = 'relative';
+        wrap.appendChild(iframe);
+      })();
+    </script>
+    <div class="stream-ftr">
+      <a class="tw-link" href="https://www.twitch.tv/sun69wukong" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+        Відкрити на Twitch
+      </a>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">🎮 sun69wukong</span>
+    </div>
+  </div>
+
+  <div class="carousel-section">
+    <p class="section-label">// рекомендовані</p>
+    <h2 class="section-title">СТРІМЕРИ</h2>
+    <div class="carousel-outer">
+      <button class="carousel-btn" id="btnPrev" aria-label="Назад">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="carousel-viewport" id="carouselViewport">
+        <div class="carousel-track" id="carouselTrack"></div>
+      </div>
+      <button class="carousel-btn" id="btnNext" aria-label="Вперед">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="carousel-dots" id="carouselDots"></div>
+  </div>
+</div>
+
+<footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
+
+<!-- ══ STREAMERS CAROUSEL ══ -->
+<script>
+const STREAMERS = [
+  { name:'Ong_Ba',           url:'https://www.twitch.tv/ong_ba',           avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/46e2417a-8fbe-4b8c-ac25-dbfd26060702-profile_image-70x70.png', twitch:'ong_ba' },
+  { name:'1okisan',          url:'https://www.twitch.tv/1okisan',          avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/766e5aad-b596-4f8e-bc00-639e1bb640dd-profile_image-70x70.png', twitch:'1okisan' },
+  { name:'OpenToGame',       url:'https://www.twitch.tv/opentogame',       avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/4434a2c5-f31e-43e4-b488-f9f585e52a8c-profile_image-70x70.png', twitch:'opentogame' },
+  { name:'KaIIiToIIIkA',    url:'https://www.twitch.tv/kaiiitoiiika',     avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/78498af0-5d61-47a2-a753-3b7dd54f330f-profile_image-70x70.png', twitch:'kaiiitoiiika' },
+  { name:'demonicniy_gamer', url:'https://www.twitch.tv/demonicniy_gamer', avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/b0ac17a7-4498-47bf-9534-ec4bb18b3737-profile_image-70x70.png', twitch:'demonicniy_gamer' },
+  { name:'LAVER_stream',     url:'https://www.twitch.tv/laver_stream',     avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/49b3b2fd-f465-4843-8703-5df5fa593d34-profile_image-70x70.png', twitch:'laver_stream' },
+  { name:'n0_s0und5120',     url:'https://www.twitch.tv/n0_s0und5120',     avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/5ef20d16-3aa0-472a-954e-285fb7eb0988-profile_image-70x70.jpeg', twitch:'n0_s0und5120' },
+  { name:'mariana_yuko',     url:'https://www.twitch.tv/mariana_yuko',     avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/b2d8f48f-08a4-4b6a-8797-9d9fa1f466ae-profile_image-70x70.jpeg', twitch:'mariana_yuko' },
+  { name:'ukrainian_npc',    url:'https://www.twitch.tv/ukrainian_npc',    avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/d1f42b50-4493-4096-9f66-2dc015a0ae77-profile_image-70x70.png',  twitch:'ukrainian_npc' },
+];
+
+(function () {
+  const VISIBLE = 3, GAP = 14;
+  const track    = document.getElementById('carouselTrack');
+  const viewport = document.getElementById('carouselViewport');
+  const dotsEl   = document.getElementById('carouselDots');
+  const total    = STREAMERS.length;
+  let current    = 0;
+
+  function initials(n) { return n.slice(0,2).toUpperCase(); }
+  function hue(n) { return [...n].reduce((a,c)=>a+c.charCodeAt(0),0)%360; }
+  function host(url) { try { return new URL(url).hostname.replace('www.',''); } catch(e){ return url; } }
+
+  STREAMERS.forEach((s, idx) => {
+    const card = document.createElement('div');
+    card.className = 'sc-card';
+    card.dataset.idx = idx;
+
+    const avContent = s.avatar ? `<img src="${s.avatar}" alt="${s.name}" loading="lazy">` : initials(s.name);
+    const avBg = s.avatar ? '' : `style="background:linear-gradient(135deg,hsl(${hue(s.name)},65%,35%),hsl(${(hue(s.name)+60)%360},55%,22%))"`;
+    const ts = Date.now();
+    const previewUrl = s.twitch ? `https://static-cdn.jtvnw.net/previews-ttv/live_user_${s.twitch.toLowerCase()}-320x180.jpg?_=${ts}` : null;
+
+    card.innerHTML = `
+      <div class="sc-thumb">
+        ${previewUrl ? `<img class="sc-preview" id="prev-${idx}" src="${previewUrl}" alt="preview">` : ''}
+        <div class="sc-thumb-offline" id="offline-${idx}">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+          <span>OFFLINE</span>
+        </div>
+        <div class="sc-live-badge hidden" id="live-${idx}">LIVE</div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-av" ${avBg}>${avContent}</div>
+        <div class="sc-info">
+          <div class="sc-name">${s.name}</div>
+          <div class="sc-url">${host(s.url)}</div>
+        </div>
+        <svg class="sc-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9146FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+          <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </div>`;
+
+    card.addEventListener('click', () => window.open(s.url, '_blank'));
+    track.appendChild(card);
+
+    if (previewUrl) {
+      const img = document.getElementById(`prev-${idx}`);
+      const offlineEl = document.getElementById(`offline-${idx}`);
+      const liveBadge = document.getElementById(`live-${idx}`);
+      img.onload  = () => { offlineEl.style.display='none'; liveBadge.classList.remove('hidden'); };
+      img.onerror = () => { img.style.display='none'; offlineEl.style.display='flex'; };
+    }
+  });
+
+  const clonesBefore = VISIBLE, clonesAfter = VISIBLE;
+
+  function buildClones() {
+    const cards = Array.from(track.querySelectorAll('.sc-card'));
+    for (let i = total - clonesBefore; i < total; i++) {
+      const c = cards[i].cloneNode(true); c.classList.add('sc-clone');
+      track.insertBefore(c, track.firstChild);
+    }
+    for (let i = 0; i < clonesAfter; i++) {
+      const c = cards[i].cloneNode(true); c.classList.add('sc-clone');
+      track.appendChild(c);
+    }
+  }
+
+  function cardStep() { return (viewport.clientWidth - GAP*(VISIBLE-1))/VISIBLE + GAP; }
+  function setWidths() {
+    const w = (viewport.clientWidth - GAP*(VISIBLE-1))/VISIBLE;
+    track.querySelectorAll('.sc-card').forEach(c => { c.style.width = w+'px'; });
+  }
+
+  function goTo(idx, animate=true) {
+    current = idx;
+    const offset = (clonesBefore + current) * cardStep();
+    track.style.transition = animate ? 'transform .38s cubic-bezier(.4,0,.2,1)' : 'none';
+    track.style.transform = `translateX(-${offset}px)`;
+    renderDots();
+  }
+
+  track.addEventListener('transitionend', () => {
+    if (current < 0)      goTo(current + total, false);
+    else if (current >= total) goTo(current - total, false);
+  });
+
+  function renderDots() {
+    dotsEl.innerHTML = '';
+    const n = Math.ceil(total/VISIBLE);
+    const active = Math.floor(((current%total)+total)%total/VISIBLE)%n;
+    for (let i=0;i<n;i++){
+      const d=document.createElement('div');
+      d.className='cdot'+(i===active?' active':'');
+      d.addEventListener('click',()=>goTo(i*VISIBLE));
+      dotsEl.appendChild(d);
+    }
+  }
+
+  document.getElementById('btnPrev').addEventListener('click', ()=>goTo(current-1));
+  document.getElementById('btnNext').addEventListener('click', ()=>goTo(current+1));
+
+  let tx=0;
+  viewport.addEventListener('touchstart', e=>{tx=e.touches[0].clientX;},{passive:true});
+  viewport.addEventListener('touchend',   e=>{const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>40)goTo(current+(dx<0?1:-1));},{passive:true});
+
+  let rt;
+  window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{setWidths();goTo(current,false);},80);});
+
+  buildClones(); setWidths(); goTo(0, false);
+})();
+</script>
+
+<script>
+  const _burger = document.getElementById('burger');
+  const _mobileMenu = document.getElementById('mobileMenu');
+  if (_burger && _mobileMenu) {
+    _burger.addEventListener('click', () => { _burger.classList.toggle('open'); _mobileMenu.classList.toggle('open'); });
+    _mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => { _burger.classList.remove('open'); _mobileMenu.classList.remove('open'); });
+    });
+  }
+</script>
+
+</body>
+</html>
