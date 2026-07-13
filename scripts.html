@@ -48,7 +48,10 @@
     .script-card img {
       width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;
       background: var(--bg3);
+      cursor: zoom-in;
+      transition: filter .2s;
     }
+    .script-card img:hover { filter: brightness(1.1); }
 
     /* ── емодзі-заглушка ── */
     .script-card-emoji {
@@ -88,6 +91,38 @@
       box-shadow: 0 0 14px rgba(145,70,255,.3);
     }
     .script-dl:hover { opacity: .85; transform: scale(1.04); }
+
+    /* ── LIGHTBOX (перегляд зображення на весь екран) ── */
+    .lightbox-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 1000;
+      align-items: center; justify-content: center;
+      padding: 60px 24px;
+      background: rgba(7,7,15,.94);
+      backdrop-filter: blur(10px);
+      cursor: zoom-out;
+    }
+    .lightbox-overlay.open { display: flex; }
+    .lightbox-overlay img {
+      max-width: 90vw; max-height: 85vh;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 70px rgba(0,0,0,.6);
+      cursor: default;
+      transform: scale(.94);
+      opacity: 0;
+      transition: transform .25s ease, opacity .25s ease;
+    }
+    .lightbox-overlay.open img { transform: scale(1); opacity: 1; }
+    .lightbox-close {
+      position: absolute; top: 22px; right: 30px;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 50%;
+      color: var(--text); font-size: 20px; line-height: 1; cursor: pointer;
+      transition: background .2s, transform .15s;
+    }
+    .lightbox-close:hover { background: var(--accent); transform: scale(1.08) rotate(90deg); }
 
     footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
     footer strong { color: var(--accent); }
@@ -155,6 +190,8 @@
       .page { padding: 76px 14px 40px; }
       nav { padding:0 14px; }
       footer { padding:18px 14px; }
+      .lightbox-overlay { padding: 40px 12px; }
+      .lightbox-close { top: 12px; right: 14px; width: 36px; height: 36px; font-size: 18px; }
     }
     @media(max-width:380px){
       .mobile-menu a { font-size:26px; letter-spacing:2px; }
@@ -205,6 +242,11 @@
   <h1 class="section-title">МОЇ СКРИПТИ</h1>
 
   <div class="scripts-grid" id="scripts-container"></div>
+</div>
+
+<div class="lightbox-overlay" id="lightboxOverlay" role="dialog" aria-modal="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Закрити">✕</button>
+  <img id="lightboxImg" src="" alt="">
 </div>
 
 <footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
@@ -280,7 +322,7 @@
 
   {
       name: "Twitch Unfollow Tracker",
-      desc: "Відстежуйте тих хто зробив Unfollow вашому твічі",
+      desc: "Відстежуйте тих хто зробив Unfollow на вашому твічі",
       img:  "https://raw.githubusercontent.com/djesld12q-stack/FileUpload/refs/heads/main/twichUnfollow.png",      
       url:  "https://microsoftedge.microsoft.com/addons/detail/dpehbgfajldjfkbchokajhdcneanjnib"
      },   
@@ -328,6 +370,39 @@
         _burger.classList.remove('open');
         _mobileMenu.classList.remove('open');
       });
+    });
+  }
+</script>
+
+<script>
+  // ── LIGHTBOX: клік на зображення скрипта → збільшення на весь екран ──
+  const _lbOverlay = document.getElementById('lightboxOverlay');
+  const _lbImg = document.getElementById('lightboxImg');
+  const _lbClose = document.getElementById('lightboxClose');
+  const _scriptsGrid = document.getElementById('scripts-container');
+
+  if (_lbOverlay && _lbImg && _lbClose && _scriptsGrid) {
+    const openLightbox = (src, alt) => {
+      _lbImg.src = src;
+      _lbImg.alt = alt || '';
+      _lbOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+    const closeLightbox = () => {
+      _lbOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    _scriptsGrid.addEventListener('click', (e) => {
+      const clickedImg = e.target.closest('.script-card img');
+      if (clickedImg) openLightbox(clickedImg.src, clickedImg.alt);
+    });
+    _lbOverlay.addEventListener('click', (e) => {
+      if (e.target === _lbOverlay) closeLightbox();
+    });
+    _lbClose.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
     });
   }
 </script>
