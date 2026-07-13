@@ -54,6 +54,51 @@
     .link-card:hover .link-arr { color: var(--accent); transform: translateX(4px); }
     .link-card.donate:hover .link-arr { color: var(--gold); }
 
+    /* ── ПОПЕРЕДЖЕННЯ ПЕРЕД ПЕРЕХОДОМ НА ІНШИЙ САЙТ ── */
+    .leave-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 1000;
+      align-items: center; justify-content: center;
+      padding: 24px;
+      background: rgba(7,7,15,.85);
+      backdrop-filter: blur(8px);
+    }
+    .leave-overlay.open { display: flex; }
+    .leave-modal {
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 14px;
+      padding: 28px 26px 24px; max-width: 360px; width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 70px rgba(0,0,0,.6);
+      transform: scale(.94); opacity: 0;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+    .leave-overlay.open .leave-modal { transform: scale(1); opacity: 1; }
+    .leave-modal-icon {
+      width: 52px; height: 52px; margin: 0 auto 14px;
+      border-radius: 50%;
+      background: rgba(145,70,255,.12); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .leave-modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; margin-bottom: 10px; }
+    .leave-modal-text { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 4px; }
+    .leave-modal-text strong { color: var(--text); font-weight: 600; }
+    .leave-modal-url { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); opacity: .65; margin-bottom: 22px; word-break: break-all; }
+    .leave-modal-actions { display: flex; gap: 10px; }
+    .leave-btn {
+      flex: 1; padding: 11px 0; border-radius: 8px; border: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+      cursor: pointer; transition: opacity .2s, transform .15s, background .2s, border-color .2s;
+      background: transparent; color: var(--muted);
+    }
+    .leave-btn:hover { transform: scale(1.03); }
+    .leave-btn-cancel:hover { color: var(--text); border-color: rgba(145,70,255,.4); }
+    .leave-btn-confirm {
+      background: var(--accent); color: #fff; border-color: transparent;
+      box-shadow: 0 0 14px rgba(145,70,255,.3);
+    }
+    .leave-btn-confirm:hover { opacity: .88; }
+
     footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
     footer strong { color: var(--accent); }
 
@@ -172,7 +217,7 @@
 <div class="page">
   <p class="section-label">// посилання</p>
   <h1 class="section-title">мої сайти</h1>
-  <div class="links-list">
+  <div class="links-list" id="links-container">
 
     <a href="https://www.twitch.tv/sun69wukong" target="_blank" class="link-card">
       <div class="link-ico">
@@ -274,6 +319,19 @@
   </div>
 </div>
 
+<div class="leave-overlay" id="leaveOverlay" role="dialog" aria-modal="true">
+  <div class="leave-modal">
+    <div class="leave-modal-icon">⚠️</div>
+    <div class="leave-modal-title">ВИ ЗАЛИШАЄТЕ САЙТ</div>
+    <p class="leave-modal-text">Ви дійсно зібрались перейти на <strong id="leaveTargetName">сайт</strong>?</p>
+    <p class="leave-modal-url" id="leaveTargetUrl"></p>
+    <div class="leave-modal-actions">
+      <button class="leave-btn leave-btn-cancel" id="leaveCancelBtn">Скасувати</button>
+      <button class="leave-btn leave-btn-confirm" id="leaveConfirmBtn">Перейти</button>
+    </div>
+  </div>
+</div>
+
 <footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
 
 <script>
@@ -289,6 +347,56 @@
         _burger.classList.remove('open');
         _mobileMenu.classList.remove('open');
       });
+    });
+  }
+</script>
+
+<script>
+  // ── ПОПЕРЕДЖЕННЯ ПЕРЕД ПЕРЕХОДОМ НА ІНШИЙ САЙТ ──
+  const _leaveOverlay = document.getElementById('leaveOverlay');
+  const _leaveTargetName = document.getElementById('leaveTargetName');
+  const _leaveTargetUrl = document.getElementById('leaveTargetUrl');
+  const _leaveCancelBtn = document.getElementById('leaveCancelBtn');
+  const _leaveConfirmBtn = document.getElementById('leaveConfirmBtn');
+  const _linksContainer = document.getElementById('links-container');
+
+  if (_leaveOverlay && _leaveTargetName && _leaveTargetUrl && _leaveCancelBtn && _leaveConfirmBtn && _linksContainer) {
+    let _pendingHref = null;
+    let _pendingTarget = '_blank';
+
+    const openLeaveModal = (href, name, target, hostname) => {
+      _pendingHref = href;
+      _pendingTarget = target || '_blank';
+      _leaveTargetName.textContent = name;
+      _leaveTargetUrl.textContent = hostname || '';
+      _leaveOverlay.classList.add('open');
+    };
+    const closeLeaveModal = () => {
+      _leaveOverlay.classList.remove('open');
+      _pendingHref = null;
+    };
+
+    _linksContainer.addEventListener('click', (e) => {
+      const card = e.target.closest('.link-card');
+      if (!card) return;
+      e.preventDefault();
+      const name = card.querySelector('.link-name')?.textContent.trim() || card.href;
+      let hostname = '';
+      try { hostname = new URL(card.href).hostname.replace(/^www\./, ''); } catch (_) {}
+      openLeaveModal(card.href, name, card.target, hostname);
+    });
+
+    _leaveCancelBtn.addEventListener('click', closeLeaveModal);
+    _leaveOverlay.addEventListener('click', (e) => {
+      if (e.target === _leaveOverlay) closeLeaveModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && _leaveOverlay.classList.contains('open')) closeLeaveModal();
+    });
+
+    _leaveConfirmBtn.addEventListener('click', () => {
+      if (_pendingHref) window.open(_pendingHref, _pendingTarget);
+      closeLeaveModal();
     });
   }
 </script>
